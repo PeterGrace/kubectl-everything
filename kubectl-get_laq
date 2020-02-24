@@ -73,11 +73,11 @@ then
         fi
     done
     idlist=($(kubectl get pods -o json -l $(echo $kv|sed s/\"//g)|jq -r '.items[].status.containerStatuses[].containerID,.status.initContainerStatuses[].containerID' 2>/dev/null))
-    createquery $idlist
+    createquery 
 elif [[ ! -z "$POD" ]];
 then
     idlist=($(kubectl get $POD -o json | jq -r '.status.containerStatuses[].containerID,.status.initContainerStatuses[].containerID' 2>/dev/null))
-    createquery $idlist
+    createquery
 else
     echo "please specify either -p/--pod to get pod log, or -d/--deployment to get logs for the entire deployment"
 fi
