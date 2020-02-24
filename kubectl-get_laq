@@ -79,5 +79,5 @@ then
     idlist=($(kubectl get $POD -o json | jq -r '.status.containerStatuses[].containerID,.status.initContainerStatuses[].containerID' 2>/dev/null))
     createquery $idlist
 else
-    echo "invalid"
+    echo "please specify either -p/--pod to get pod log, or -d/--deployment to get logs for the entire deployment"
 fi
