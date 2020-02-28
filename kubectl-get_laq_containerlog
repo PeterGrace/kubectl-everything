@@ -56,3 +56,28 @@ createquery() {
         echo "| extend msg=parse_json(LogEntry)"
         echo "|project TimeGenerated, msg, ContainerHostname"
 }
+
+
+if [[ ! -z "$DEPLOYMENT" ]];
+then
+    LABELS=$(kubectl get $DEPLOYMENT -o json | jq -r '.spec.template.metadata.labels')
+    numrecs=$(echo $LABELS|jq 'keys|length')
+    for ((i=0;i<=`expr $numrecs - 1`;i++))
+    do
+        key=$(echo $LABELS|jq "keys[$i]")
+        if [[ -z "$kv" ]];
+        then
+            kv="$key=$(echo $LABELS|jq .$key)"
+        else
+            kv="$kv,$key=$(echo $LABELS|jq .$key)"
+        fi
+    done
+    idlist=($(kubectl get pods -o json -l $(echo $kv|sed s/\"//g)|jq -r '.items[].status.containerStatuses[].containerID,.status.initContainerStatuses[].containerID' 2>/dev/null))
+    createquery 
+elif [[ ! -z "$POD" ]];
+then
+    idlist=($(kubectl get $POD -o json | jq -r '.status.containerStatuses[].containerID,.status.initContainerStatuses[].containerID' 2>/dev/null))
+    createquery
+else
+    echo "please specify either -p/--pod to get pod log, or -d/--deployment to get logs for the entire deployment"
+fi
