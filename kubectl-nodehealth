@@ -1,0 +1,9 @@
+#!/bin/bash
+if [[ -z "$1" ]];
+then
+    echo "specify full node name please."
+    exit 1
+fi
+
+kubectl describe node $1 | awk '/Conditions/,/Addresses/'
+kubectl describe node $1 | awk '/Capacity/,/System/'
