@@ -7,6 +7,8 @@ This command will show you all pods that are not in Running or Completed status.
 # kubectl-sadreplicas
 This command will show you any replicasets that don't have the same number of "ready" pods as they've requested.
 
+# kubectl-get_laq
+This command will produce an Azure Log Analytics query suitable for finding container logs for a deployment or pod.
 
 ## Prerequisites
   * You'll need a recent kubectl binary.
@@ -27,3 +29,6 @@ This command will show you any replicasets that don't have the same number of "r
   * `kubectl sadreplicas` -- Show all replicasets in this namespace which do not have the same number of ready pods as requested.
   * `kubectl sadreplicas -n foo` -- Show all replicasets in specified namespace which do not have the same number of ready pods as requested.
   * `kubectl sadreplicas -a` -- Show all replicasets in the whole cluster which do not have the same number of ready pods as requested.
+## Usage (get-laq)
+  * `kubectl get-laq -p podname` -- Get a Log Analytics query for a particular pod id.  Can use -n to specify alternate namespace, or -a for all.
+  * `kubectl get-laq -d deployment` -- Get a Log Analytics query for all containers deployed to a deployment specification. -n and -a as above work as expected

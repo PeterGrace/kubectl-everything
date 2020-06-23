@@ -1,0 +1,83 @@
+#!/usr/bin/bash
+NS=""
+PARAMS=""
+while (( "$#" )); do
+  case "$1" in
+    -p|--pod)
+      POD="pod/$2"
+      shift 2
+      ;;
+    -d|--deployment)
+      DEPLOYMENT="deployment/$2"
+      shift 2
+      ;;
+    -n|--namespace)
+      NS="-n $2"
+      shift 2
+      ;;
+    -a|--all-namespaces)
+      NS="--all-namespaces"
+      shift
+      ;;
+    --) # end argument parsing
+      shift
+      break
+      ;;
+    -*|--*=) # unsupported flags
+      echo "Error: Unsupported flag $1" >&2
+      exit 1
+      ;;
+    *) # preserve positional arguments
+      PARAMS="$PARAMS $1"
+      shift
+      ;;
+  esac
+done
+# set positional arguments in their proper place
+eval set -- "$PARAMS"
+
+createquery() {
+    for i in "${idlist[@]}"
+    do
+        id=$(echo $i|sed s,docker://,,g)
+        if [[ ! -z "$querystr" ]];
+        then
+            querystr="$querystr,\"$id\""
+        else
+            querystr="(\"$id\""
+        fi
+    done
+        querystr="$querystr)"
+        echo "ContainerLog"
+        echo "| join ( ContainerInventory| project ContainerID, ContainerHostname)"
+        echo "on ContainerID"
+        echo "|where ContainerID in"
+        echo $querystr
+        echo "| extend msg=parse_json(LogEntry)"
+        echo "|project TimeGenerated, msg, ContainerHostname"
+}
+
+
+if [[ ! -z "$DEPLOYMENT" ]];
+then
+    LABELS=$(kubectl get $DEPLOYMENT -o json | jq -r '.spec.template.metadata.labels')
+    numrecs=$(echo $LABELS|jq 'keys|length')
+    for ((i=0;i<=`expr $numrecs - 1`;i++))
+    do
+        key=$(echo $LABELS|jq "keys[$i]")
+        if [[ -z "$kv" ]];
+        then
+            kv="$key=$(echo $LABELS|jq .$key)"
+        else
+            kv="$kv,$key=$(echo $LABELS|jq .$key)"
+        fi
+    done
+    idlist=($(kubectl get pods -o json -l $(echo $kv|sed s/\"//g)|jq -r '.items[].status.containerStatuses[].containerID,.status.initContainerStatuses[].containerID' 2>/dev/null))
+    createquery 
+elif [[ ! -z "$POD" ]];
+then
+    idlist=($(kubectl get $POD -o json | jq -r '.status.containerStatuses[].containerID,.status.initContainerStatuses[].containerID' 2>/dev/null))
+    createquery
+else
+    echo "please specify either -p/--pod to get pod log, or -d/--deployment to get logs for the entire deployment"
+fi
