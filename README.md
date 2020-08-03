@@ -13,6 +13,9 @@ This command will produce an Azure Log Analytics query suitable for finding cont
 # kubectl-get_pod_priority
 This command produces a list of pods and what priorityclass they're operating under.
 
+# kubectl-get_psp
+This command produces a list of pods and what Pod Security Policy they're operating under.
+
 ## Prerequisites
   * You'll need a recent kubectl binary.
 
@@ -39,3 +42,7 @@ This command produces a list of pods and what priorityclass they're operating un
   * `kubectl get-pod-priority` -- Show all pods in this namespace and what priorityClass they're running under.
   * `kubectl get-pod-priority -n foo` -- Show all pods in specified namespace and what priorityClass they're running under.
   * `kubectl get-pod-priority -a` -- Show all pods in the whole cluster and what priorityClass they're running under.
+## Usage (get-psp)
+  * `kubectl get-psp` -- Show all pods in this namespace and what Pod Security Policy applies to them.
+  * `kubectl get-psp -n foo` -- Show all pods in specified namespace and what Pod Security Policy applies to them.
+  * `kubectl get-psp -a` -- Show all pods in the whole cluster and what Pod Security Policy applies to them.
