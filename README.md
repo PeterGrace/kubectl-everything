@@ -10,6 +10,9 @@ This command will show you any replicasets that don't have the same number of "r
 # kubectl-get_laq
 This command will produce an Azure Log Analytics query suitable for finding container logs for a deployment or pod.
 
+# kubectl-get_pod_priority
+This command produces a list of pods and what priorityclass they're operating under.
+
 ## Prerequisites
   * You'll need a recent kubectl binary.
 
@@ -32,3 +35,7 @@ This command will produce an Azure Log Analytics query suitable for finding cont
 ## Usage (get-laq)
   * `kubectl get-laq -p podname` -- Get a Log Analytics query for a particular pod id.  Can use -n to specify alternate namespace, or -a for all.
   * `kubectl get-laq -d deployment` -- Get a Log Analytics query for all containers deployed to a deployment specification. -n and -a as above work as expected
+## Usage (get-pod-priority)
+  * `kubectl get-pod-priority` -- Show all pods in this namespace and what priorityClass they're running under.
+  * `kubectl get-pod-priority -n foo` -- Show all pods in specified namespace and what priorityClass they're running under.
+  * `kubectl get-pod-priority -a` -- Show all pods in the whole cluster and what priorityClass they're running under.
