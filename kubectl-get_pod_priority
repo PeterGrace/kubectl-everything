@@ -30,5 +30,5 @@ eval set -- "$PARAMS"
 echo "NAMESPACE NAME PRIORITY"
 kubectl get pod $NS -ojsonpath="{range .items[*]}ns/{@.metadata.namespace} \
     pod/{@.metadata.name} \
-    priorityclass/{@.spec.priorityClassName} \
+    priorityclass/{@.spec.priorityClassName} priority/{@.spec.priority}\
     {'\n'}" | column -t
