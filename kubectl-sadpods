@@ -31,5 +31,5 @@ done
 # set positional arguments in their proper place
 eval set -- "$PARAMS"
 
-kubectl get pods $NS $WIDE | egrep -v Running\|Completed
+kubectl get pods $NS $WIDE |grep -v Completed| grep -Pv '(\d{1,})/\1'
 
